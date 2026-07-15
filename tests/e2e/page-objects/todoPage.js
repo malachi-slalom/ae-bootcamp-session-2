@@ -17,6 +17,18 @@ class TodoPage {
   taskTitle(title) {
     return this.page.getByText(title, { exact: true });
   }
+
+  taskItem(title) {
+    return this.page.getByRole('listitem').filter({ has: this.taskTitle(title) });
+  }
+
+  async deleteTask(title) {
+    const taskItem = this.taskItem(title);
+
+    if (await taskItem.isVisible()) {
+      await taskItem.getByRole('button', { name: 'Delete' }).click();
+    }
+  }
 }
 
 module.exports = { TodoPage };

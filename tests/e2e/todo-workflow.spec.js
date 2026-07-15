@@ -4,10 +4,15 @@ const { TodoPage } = require('./page-objects/todoPage');
 test.describe('Todo workflow', () => {
   test('user can create a new task', async ({ page }) => {
     const todoPage = new TodoPage(page);
+    const taskTitle = `Playwright task ${Date.now()}`;
 
     await todoPage.goto();
-    await todoPage.createTask('Playwright task');
+    await todoPage.createTask(taskTitle);
 
-    await expect(todoPage.taskTitle('Playwright task')).toBeVisible();
+    try {
+      await expect(todoPage.taskTitle(taskTitle)).toBeVisible();
+    } finally {
+      await todoPage.deleteTask(taskTitle);
+    }
   });
 });
