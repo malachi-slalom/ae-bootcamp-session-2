@@ -1,0 +1,80 @@
+
+> copilot-bootcamp@1.0.0 start
+> concurrently "npm run start:frontend" "npm run start:backend"
+
+[0] 
+[0] > copilot-bootcamp@1.0.0 start:frontend
+[0] > npm run start --workspace=frontend
+[0] 
+[1] 
+[1] > copilot-bootcamp@1.0.0 start:backend
+[1] > npm run start --workspace=backend
+[1] 
+[0] 
+[0] > frontend@0.1.0 start
+[0] > react-scripts start
+[0] 
+[1] 
+[1] > backend@1.0.0 start
+[1] > nodemon src/index.js
+[1] 
+[1] [33m[nodemon] 3.1.10[39m
+[1] [33m[nodemon] to restart at any time, enter `rs`[39m
+[1] [33m[nodemon] watching path(s): *.*[39m
+[1] [33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[1] [32m[nodemon] starting `node src/index.js`[39m
+[1] Server running on port 3030
+[1] API available at http://localhost:3030/api/todos
+[0] Browserslist: browsers data (caniuse-lite) is 15 months old. Please run:
+[0]   npx update-browserslist-db@latest
+[0]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[0] (node:50712) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[0] (Use `node --trace-deprecation ...` to show where the warning was created)
+[0] (node:50712) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[0] Starting the development server...
+[0] 
+[1] [0mHEAD / [32m200[0m 13.222 ms - 53[0m
+[0] Compiled with warnings.
+[0] 
+[0] [eslint] 
+[0] src/App.js
+[0]   Line 22:6:  React Hook useEffect has a missing dependency: 'fetchTodos'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+[0] 
+[0] Search for the keywords to learn more about each warning.
+[0] To ignore, add // eslint-disable-next-line to the line before.
+[0] 
+[0] WARNING in [eslint] 
+[0] src/App.js
+[0]   Line 22:6:  React Hook useEffect has a missing dependency: 'fetchTodos'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+[0] 
+[0] webpack compiled with 1 warning
+[1] [32m[nodemon] restarting due to changes...[39m
+[1] [32m[nodemon] restarting due to changes...[39m
+[1] [32m[nodemon] starting `node src/index.js`[39m
+[1] node:events:502
+[1]       throw er; // Unhandled 'error' event
+[1]       ^
+[1] 
+[1] Error: listen EADDRINUSE: address already in use :::3030
+[1]     at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+[1]     at listenInCluster (node:net:1965:12)
+[1]     at Server.listen (node:net:2067:7)
+[1]     at Function.listen (/workspaces/ae-bootcamp-session-2/node_modules/express/lib/application.js:635:24)
+[1]     at Object.<anonymous> (/workspaces/ae-bootcamp-session-2/packages/backend/src/index.js:6:5)
+[1]     at Module._compile (node:internal/modules/cjs/loader:1521:14)
+[1]     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+[1]     at Module.load (node:internal/modules/cjs/loader:1266:32)
+[1]     at Module._load (node:internal/modules/cjs/loader:1091:12)
+[1]     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+[1] Emitted 'error' event on Server instance at:
+[1]     at emitErrorNT (node:net:1944:8)
+[1]     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+[1]   code: 'EADDRINUSE',
+[1]   errno: -98,
+[1]   syscall: 'listen',
+[1]   address: '::',
+[1]   port: 3030
+[1] }
+[1] 
+[1] Node.js v20.20.2
+[1] [31m[nodemon] app crashed - waiting for file changes before starting...[39m

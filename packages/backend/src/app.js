@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 
@@ -18,6 +19,10 @@ const dbPath = process.env.DB_PATH ||
   (process.env.NODE_ENV === 'test'
     ? ':memory:'
     : path.join(__dirname, '../data/todos.db'));
+
+if (dbPath !== ':memory:') {
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+}
 
 const db = new Database(dbPath);
 
