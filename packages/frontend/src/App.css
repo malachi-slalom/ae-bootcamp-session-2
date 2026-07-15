@@ -1,94 +1,210 @@
 .App {
-  text-align: center;
-  max-width: 800px;
+  text-align: left;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
+  color: #1f2937;
 }
 
 .App-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  background: linear-gradient(180deg, #e8eef8 0%, #d9e4f5 100%);
+  padding: 16px;
+  color: #10253f;
+  border: 1px solid #8ea4bf;
+  box-shadow: inset 1px 1px 0 #f7fbff, inset -1px -1px 0 #aabed6;
+  margin-bottom: 24px;
 }
 
 .App-header h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.75rem;
 }
 
 main {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 section {
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f1f3f6;
+  border: 1px solid #aeb7c3;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #c6ceda;
+  padding: 16px;
 }
 
-.add-item-section form {
-  display: flex;
-  gap: 10px;
+.task-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
   margin-top: 10px;
 }
 
+.task-form input[type='date'],
+.task-form select {
+  min-height: 38px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  grid-column: span 2;
+}
+
 input {
-  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
   padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #7f8ca0;
+  background-color: #ffffff;
 }
 
 button {
   padding: 8px 16px;
-  background-color: #61dafb;
-  color: #282c34;
-  border: none;
-  border-radius: 4px;
+  background-color: #2a6bb0;
+  color: #ffffff;
+  border: 1px solid #1f4f82;
   cursor: pointer;
   font-weight: bold;
+  box-shadow: inset 1px 1px 0 #5f90c7, inset -1px -1px 0 #18406a;
 }
 
 button:hover {
-  background-color: #21a1c9;
+  background-color: #245f9d;
+}
+
+.secondary-btn {
+  background-color: #e4e8ef;
+  color: #1f2937;
+  border: 1px solid #95a1b0;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #b8c2cf;
 }
 
 ul {
   list-style-type: none;
   padding: 0;
+  margin: 8px 0 0;
 }
 
 li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+  padding: 12px;
+  border: 1px solid #c2c9d4;
+  margin-bottom: 8px;
+  background-color: #ffffff;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-li:last-child {
-  border-bottom: none;
+  gap: 12px;
 }
 
 .delete-btn {
-  background-color: #f44336;
+  background-color: #b52e2e;
   color: white;
   padding: 6px 12px;
   font-size: 0.8rem;
-  margin-left: 10px;
+  border-color: #7b1e1e;
+  box-shadow: inset 1px 1px 0 #c65858, inset -1px -1px 0 #5f1515;
 }
 
 .delete-btn:hover {
-  background-color: #d32f2f;
+  background-color: #992525;
 }
 
 .error {
   color: #d32f2f;
   font-weight: bold;
+}
+
+.task-main {
+  flex: 1;
+}
+
+.task-title {
+  font-weight: bold;
+}
+
+.task-description {
+  margin: 6px 0;
+  color: #4b5563;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.priority-chip,
+.overdue-badge,
+.completed-badge {
+  border: 1px solid #8e9bad;
+  padding: 2px 6px;
+  background-color: #ebeff5;
+}
+
+.overdue-badge {
+  color: #7f1d1d;
+  border-color: #c47c7c;
+  background-color: #fbe8e8;
+}
+
+.completed-badge {
+  color: #0f5132;
+  border-color: #7db69a;
+  background-color: #e6f6ed;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-completed .task-title,
+.task-completed .task-description {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.task-overdue {
+  border-color: #d4a4a4;
+}
+
+.filters-section .filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+select {
+  border: 1px solid #7f8ca0;
+  background-color: #ffffff;
+  padding: 8px;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .App {
+    padding: 12px;
+  }
+
+  .task-form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    grid-column: span 1;
+  }
+
+  li {
+    flex-direction: column;
+  }
+
+  .task-actions {
+    width: 100%;
+  }
 }

@@ -1,102 +1,136 @@
+process.env.NODE_ENV = 'test';
+
 const request = require('supertest');
 const { app, db } = require('../src/app');
 
-// Close the database connection after all tests
 afterAll(() => {
   if (db) {
     db.close();
   }
 });
 
-// Test helpers
-const createItem = async (name = 'Temp Item to Delete') => {
-  const response = await request(app)
-    .post('/api/items')
-    .send({ name })
-    .set('Accept', 'application/json');
+describe('TODO API', () => {
+  const createTodo = async (payload = {}) => {
+    const response = await request(app)
+      .post('/api/todos')
+      .send({
+        title: 'Test Task',
+        description: 'Task description',
+        priority: 'Medium',
+        ...payload,
+      })
+      .set('Accept', 'application/json');
 
-  expect(response.status).toBe(201);
-  expect(response.body).toHaveProperty('id');
-  return response.body;
-};
+    expect(response.status).toBe(201);
+    return response.body;
+  };
 
-describe('API Endpoints', () => {
-  describe('GET /api/items', () => {
-    it('should return all items', async () => {
-      const response = await request(app).get('/api/items');
+  it('creates and lists tasks', async () => {
+    const created = await createTodo({ title: 'Create and List Task' });
 
-      expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
+    expect(created).toMatchObject({
+      id: expect.any(Number),
+      title: 'Create and List Task',
+      description: 'Task description',
+      priority: 'Medium',
+      completed: false,
+    });
 
-      // Check if items have the expected structure
-      const item = response.body[0];
-      expect(item).toHaveProperty('id');
-      expect(item).toHaveProperty('name');
-      expect(item).toHaveProperty('created_at');
+    const listResponse = await request(app).get('/api/todos');
+    expect(listResponse.status).toBe(200);
+    expect(Array.isArray(listResponse.body)).toBe(true);
+    expect(listResponse.body.some((todo) => todo.id === created.id)).toBe(true);
+  });
+
+  it('returns 400 for empty title', async () => {
+    const response = await request(app)
+      .post('/api/todos')
+      .send({ title: '' })
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Task title is required');
+  });
+
+  it('returns 400 for invalid due date', async () => {
+    const response = await request(app)
+      .post('/api/todos')
+      .send({ title: 'Date test', dueDate: 'invalid' })
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty(
+      'error',
+      'Due date must be a valid date in YYYY-MM-DD format'
+    );
+  });
+
+  it('updates an existing task', async () => {
+    const created = await createTodo({ title: 'Old Title', priority: 'Low' });
+
+    const response = await request(app)
+      .patch(`/api/todos/${created.id}`)
+      .send({ title: 'New Title', priority: 'High' })
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      id: created.id,
+      title: 'New Title',
+      priority: 'High',
     });
   });
 
-  describe('POST /api/items', () => {
-    it('should create a new item', async () => {
-      const newItem = { name: 'Test Item' };
-      const response = await request(app)
-        .post('/api/items')
-        .send(newItem)
-        .set('Accept', 'application/json');
+  it('toggles completion state', async () => {
+    const created = await createTodo({ title: 'Completion Task' });
 
-      expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('id');
-      expect(response.body.name).toBe(newItem.name);
-      expect(response.body).toHaveProperty('created_at');
-    });
+    const response = await request(app)
+      .patch(`/api/todos/${created.id}/completion`)
+      .send({ completed: true })
+      .set('Accept', 'application/json');
 
-    it('should return 400 if name is missing', async () => {
-      const response = await request(app)
-        .post('/api/items')
-        .send({})
-        .set('Accept', 'application/json');
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toBe('Item name is required');
-    });
-
-    it('should return 400 if name is empty', async () => {
-      const response = await request(app)
-        .post('/api/items')
-        .send({ name: '' })
-        .set('Accept', 'application/json');
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toBe('Item name is required');
-    });
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('completed', true);
   });
 
-  describe('DELETE /api/items/:id', () => {
-    it('should delete an existing item', async () => {
-      const item = await createItem('Item To Be Deleted');
+  it('filters by completed status', async () => {
+    const activeTodo = await createTodo({ title: 'Active Filter Task' });
+    const completedTodo = await createTodo({ title: 'Completed Filter Task' });
 
-      const deleteResponse = await request(app).delete(`/api/items/${item.id}`);
-      expect(deleteResponse.status).toBe(200);
-      expect(deleteResponse.body).toEqual({ message: 'Item deleted successfully', id: item.id });
+    await request(app)
+      .patch(`/api/todos/${completedTodo.id}/completion`)
+      .send({ completed: true })
+      .set('Accept', 'application/json');
 
-      const deleteAgain = await request(app).delete(`/api/items/${item.id}`);
-      expect(deleteAgain.status).toBe(404);
-      expect(deleteAgain.body).toHaveProperty('error', 'Item not found');
-    });
+    const activeResponse = await request(app).get('/api/todos?status=active');
+    expect(activeResponse.status).toBe(200);
+    expect(activeResponse.body.every((todo) => todo.completed === false)).toBe(true);
+    expect(activeResponse.body.some((todo) => todo.id === activeTodo.id)).toBe(true);
 
-    it('should return 404 when item does not exist', async () => {
-      const response = await request(app).delete('/api/items/999999');
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty('error', 'Item not found');
-    });
+    const completedResponse = await request(app).get('/api/todos?status=completed');
+    expect(completedResponse.status).toBe(200);
+    expect(completedResponse.body.every((todo) => todo.completed === true)).toBe(true);
+  });
 
-    it('should return 400 for invalid id', async () => {
-      const response = await request(app).delete('/api/items/abc');
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error', 'Valid item ID is required');
-    });
+  it('searches by title', async () => {
+    await createTodo({ title: 'Searchable Task' });
+    await createTodo({ title: 'Another Task' });
+
+    const response = await request(app).get('/api/todos?search=searchable');
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body.every((todo) => /searchable/i.test(todo.title))).toBe(true);
+  });
+
+  it('deletes a task', async () => {
+    const created = await createTodo({ title: 'Delete Task' });
+
+    const deleteResponse = await request(app).delete(`/api/todos/${created.id}`);
+    expect(deleteResponse.status).toBe(200);
+    expect(deleteResponse.body).toEqual({ message: 'Task deleted successfully', id: created.id });
+
+    const deleteAgain = await request(app).delete(`/api/todos/${created.id}`);
+    expect(deleteAgain.status).toBe(404);
+    expect(deleteAgain.body).toHaveProperty('error', 'Task not found');
   });
 });
